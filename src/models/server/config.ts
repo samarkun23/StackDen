@@ -12,10 +12,10 @@ client
 
 const databases = new Databases(client)
 const avatars = new Avatars(client);
-const stroage = new Storage(client);
+const storage = new Storage(client);
 const users = new Users(client);
 
-export {client, databases, users,avatars,stroage}
+export {client, databases, users,avatars,storage}
 
 
 
