@@ -30,6 +30,7 @@ interface IAuthStore {
         email: string,
         password: string,
     ): Promise<{success: boolean; error?: AppwriteException | null}>
+    logout(): Promise<void>
 }
 
 
