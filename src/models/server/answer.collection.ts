@@ -5,12 +5,12 @@ import { databases } from './config'
 
 export default async function createAnswerCollection() {
     await databases.createCollection(db, answerCollection, answerCollection,[
+        Permission.create("users"),
         Permission.read("any"),
         Permission.read("users"),
         // Permission.write("users"),
+        Permission.update("users"),
         Permission.delete("users"),
-        Permission.update("usres"),
-        Permission.create("userns")
     ]);
     console.log("answer collection is created");
 
