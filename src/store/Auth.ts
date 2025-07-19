@@ -91,7 +91,12 @@ export const useAuthStore = create<IAuthStore>()(
             },
 
             async logout() {
-                
+                try {
+                    await account.deleteSessions()
+                    set({session: null, jwt: null, user: null}) 
+                } catch (error) {
+                    console.log(error) 
+                }
             },
         })),//all the functionality go inside the immer its take care states are muted and not mutated
         {
