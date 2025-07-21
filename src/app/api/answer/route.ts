@@ -35,3 +35,47 @@ export async function POST(req : NextRequest){
         ) 
     }
 }
+
+//all the user may be delete their answer
+export async function DELETE(req:NextRequest) {
+    try {
+        const {answerId} = await req.json()
+        
+        const answer = await databases.getDocument(db, answerCollection , answerId)        
+
+        const response = await databases.deleteDocument(db, answerCollection, answerId)
+
+        //decrease the reputation 
+        
+    } catch (error: any) {
+       return NextResponse.json(
+        {
+            message: error?.message || "Error deleting the answer"
+        },
+        {
+            status: error?.status || error?.code || 500
+        }
+       ) 
+    } 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
