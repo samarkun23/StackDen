@@ -1,8 +1,8 @@
 import { answerCollection, db } from "@/models/name";
-import { databases} from "@/models/server/config";
+import { databases, users} from "@/models/server/config";
 import { NextRequest, NextResponse } from "next/server";
 import { ID } from "node-appwrite";
-
+import {UserPrefs} from '@/store/Auth'
 
 export async function POST(req : NextRequest){
     try {
@@ -14,8 +14,15 @@ export async function POST(req : NextRequest){
             questionId: questionId
         })
 
-        // Increase auther reputation
-       
+        // Increase auther reputation || getPrefs its give you all the prefences that you will work on
+        const perfs = await users.getPrefs<UserPrefs>(autherId) 
+        await users.updatePrefs(autherId, {
+            reputation: Number(perfs.reputation) + 1
+        })
+
+        return NextResponse.json(response, {
+            status: 201
+        })
 
     } catch (error:any) {
         return NextResponse.json(
