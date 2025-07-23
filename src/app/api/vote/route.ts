@@ -2,7 +2,7 @@ import { answerCollection, db, questionCollection, voteCollection } from "@/mode
 import { databases, users } from "@/models/server/config";
 import { UserPrefs } from "@/store/Auth";
 import { NextRequest, NextResponse } from "next/server";
-import { Query } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 
 export async function POST(request: NextRequest) {
     try {
@@ -20,14 +20,14 @@ export async function POST(request: NextRequest) {
 
         if (res.documents.length > 0) {
             //docs exists so delete the existing vote and 
-            
+
             // delete this first
-            await databases.deleteDocuments(db, voteCollection, [res.documents[0].$id] )
+            await databases.deleteDocuments(db, voteCollection, [res.documents[0].$id])
 
             //so you click on that now you remove your vote so we delete your repotations
             const QuestionOrAnswer = await databases.getDocument(
-                db, 
-                type === "question" ? questionCollection: answerCollection, // so if the user click on the question so we grab the questionCollection and if you click on answer its grab the answer collection
+                db,
+                type === "question" ? questionCollection : answerCollection, // so if the user click on the question so we grab the questionCollection and if you click on answer its grab the answer collection
                 typeId
             );
 
@@ -36,13 +36,30 @@ export async function POST(request: NextRequest) {
             //now we change user repotations weather it's inc or dec
             await users.updatePrefs<UserPrefs>(QuestionOrAnswer.authorId, {
                 //auther id so come we need to know how we update this
-                reputation: res.documents[0].voteStatus === "upvoted" ? Number(autherPrefs.reputation) -1 : Number(autherPrefs.reputation) +1 
+                reputation: res.documents[0].voteStatus === "upvoted" ? Number(autherPrefs.reputation) - 1 : Number(autherPrefs.reputation) + 1
             })
         }
 
         // means prev vote does not exits or vote status changes
         if (res.documents[0]?.voteStatus !== voteStatus) {
             //
+            const doc = await databases.createDocument(db, voteCollection, ID.unique(), {
+                type,
+                typeId,
+                voteStatus,
+                votedById
+            });
+            // handle the repotation inc and dec
+            
+            const QuestionOrAnswer = await databases.getDocument(
+                db,
+                type === "question" ? questionCollection : answerCollection, // so if the user click on the question so we grab the questionCollection and if you click on answer its grab the answer collection
+                typeId
+            );
+            const autherPrefs = await users.getPrefs<UserPrefs>(QuestionOrAnswer.autherId)
+
+            //if vote was present 
+            
         }
 
         const [upvotes, downvotes] = await Promise.all([
@@ -71,7 +88,7 @@ export async function POST(request: NextRequest) {
                 message: "vote handle"
             },
             {
-                status:200
+                status: 200
             }
         )
 
